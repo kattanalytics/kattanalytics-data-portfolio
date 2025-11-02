@@ -1,9 +1,33 @@
-# SQL Portfolio – Kathryn Starkey  
-## Sales (Superstore) Dataset  
+# Superstore Analysis – Kathryn Starkey  
+## Superstore Sales Analysis
 
-The Superstore Sales dataset is a retail dataset widely used in analytics practice. This project demonstrates how I use SQL to answer real-world business questions such as sales trends, profitability by category, and customer segmentation. By applying filtering, aggregations, subqueries, date functions, and window functions, I show the ability to transform raw transactional data into insights. These are the same skills that support monitoring and troubleshooting in a data warehouse environment, where performance, accuracy, and timely insights are critical.
+### Overview
+This project analyzes retail sales data from the **Superstore dataset** to demonstrate practical SQL querying, data transformation, and visualization skills.  
+The goal is to extract actionable insights on profitability, customer behavior, and product performance while ensuring data consistency across the workflow.
 
-## Data Import Process
+---
+
+### Objectives
+- Build reliable SQL queries for aggregations, joins, and ranking functions.  
+- Perform data cleansing and transformation for accurate reporting.  
+- Develop an interactive Power BI dashboard to visualize sales, discounts, and profit trends.  
+- Create a foundation that can connect to Snowflake or other warehouse systems for future scaling.
+
+---
+
+### Tools & Technologies
+| Category | Tools |
+|-----------|-------|
+| Querying & Database | MySQL |
+| Visualization | Power BI |
+| Data Sources | CSV exports of Superstore dataset |
+| Version Control | GitHub |
+| Snowflake staging / Azure Data Factory integration |
+
+---
+
+
+### Data Import Process
 
 Documenting the import process ensures the dataset can be reloaded consistently, 
 which is important for data reliability and reproducibility in real-world analytics workflows.
@@ -31,13 +55,15 @@ FIELDS TERMINATED BY ',' → handles the CSV format.
 ENCLOSED BY '"' → ensures text fields load correctly.
 
 ---
-## Analysis/ Queries
 
-For each example, you’ll see:
+### SQL Analysis Highlights
+Key queries demonstrate:
+- **Top-performing product categories and subcategories** by sales and profit  
+- **Customer segmentation** by region and purchase frequency  
+- **Average discount and profitability** correlation  
+- **Year-over-year growth trends** using date-based aggregations  
 
-- **The business-style question/problem**  
-- **The SQL query I wrote**  
-- **A screenshot of the result**  
+All queries are located in the `/queries` folder with corresponding output samples in `/results`.
 
 ---
 
