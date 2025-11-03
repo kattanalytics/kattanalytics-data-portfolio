@@ -29,17 +29,17 @@ The dataset used is the Superstore Sales dataset, loaded into Snowflake and quer
 | Version Control |	GitHub |
 
 ## Data Workflow
-1. Azure Staging
+### 1. Azure Staging
   - Created a Blob Container in Azure Storage.
   - Uploaded the SampleSuperstore.csv dataset.
   - Generated a SAS Token to securely connect Snowflake to Azure Blob.
-2. Snowflake Integration
+### 2. Snowflake Integration
   - Configured an external stage in Snowflake to pull data from Azure Blob.
   - Loaded the staged file into a Snowflake table (SUPERSTORE_RAW).
   - Verified successful data ingestion through row counts and sampling queries.
-3. Querying & Analysis
+### 3. Querying & Analysis
   - Used SQL within Snowflake to aggregate and analyze sales performance, profit distribution, and growth trends.
-4. Validation & Monitoring
+### 4. Validation & Monitoring
   - Checked data integrity between source and Snowflake table.
   - Monitored query performance and cost optimization options.
 
@@ -47,7 +47,7 @@ The dataset used is the Superstore Sales dataset, loaded into Snowflake and quer
 
 ## SQL Analysis Highlights
 
-1.  Total Sales and Profit by Region
+### Total Sales and Profit by Region
 ```sql
 SELECT Region, 
        SUM(Sales) AS total_sales, 
@@ -56,11 +56,13 @@ FROM PORTFOLIO_DB.PUBLIC.SALES_SUPERSTORE
 GROUP BY Region
 ORDER BY total_sales DESC;
 ```
+📌 Summarizes regional performance and highlights key revenue and profit differences.
+
 [View Result](results/total_sales_and_profit_by_region_p_db.csv)
 
 ---
 
-2. Top 10 Customers by Profit
+### Top 10 Customers by Profit
   ```sql
 SELECT 
     CUSTOMER_NAME,
@@ -77,7 +79,7 @@ LIMIT 10;
 
 ---
 
-3. Year-Over-Year Sales Growth
+### Year-Over-Year Sales Growth
   ```sql
   SELECT 
     YEAR(ORDER_DATE) AS YEAR,
@@ -92,13 +94,13 @@ LIMIT 10;
   ORDER BY YEAR;
   ```
 
-  📌 Applies window functions and lag logic for time-series growth analysis.
+  📌 Applies window functions and lag logic to measure time-based growth trends.
 
 [View Result](results/year_over_year_sales_growth_ss_a.csv)
 
 ---
 
-4. Most Profitable Product in Each Category
+### Most Profitable Product in Each Category
 ```sql
 SELECT CATEGORY,
        PRODUCT_NAME,
@@ -109,13 +111,13 @@ QUALIFY ROW_NUMBER() OVER (PARTITION BY CATEGORY ORDER BY SUM(PROFIT) DESC) = 1
 ORDER BY TOTAL_PROFIT DESC;
 ```
 
-📌 Uses window partitioning and ranking to isolate top performers. 
+📌 Uses window partitioning and ranking to isolate top performing products by category. 
 
 [View Result](profitability_by_category_plus_product_level_p_db.csv)
 
 ---
 
-5. Regional Contribution to Total Sales
+### Regional Contribution to Total Sales
   ```sql
 SELECT 
     REGION,
@@ -129,18 +131,18 @@ GROUP BY REGION
 ORDER BY TOTAL_SALES DESC;
 ```
 
- 📌 Which region drives revenue? This is common in BI dashboards
+ 📌 Identifies which regions contribute most to overall revenue — a common BI dashboard metric.
 
 [View Result](results/regional_contribution_to_total_sales_ss_a.csv)
 
 ---
 
 ## Project Structure  
-Cloud_Warehouse_Projects/
-│
-├── queries/       # Snowflake SQL scripts
-├── results/       # Query outputs and screenshots
-└── README.md      # Project documentation
+Cloud_Warehouse_Projects/   
+│   
+├── queries/       # Snowflake SQL scripts   
+├── results/       # Query outputs and screenshots   
+└── README.md      # Project documentation   
 
 ---
 
