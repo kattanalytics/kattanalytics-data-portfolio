@@ -1,44 +1,35 @@
-# Superstore Analysis – Kathryn Starkey  
-## Superstore Sales Analysis
+# Superstore Sales Analysis – Kathryn Starkey  
 
-### Overview
-This project analyzes retail sales data from the **Superstore dataset** to demonstrate practical SQL querying, data transformation, and visualization skills.  
-The goal is to extract actionable insights on profitability, customer behavior, and product performance while ensuring data consistency across the workflow.
-
----
-
-### Objectives
-- Build reliable SQL queries for aggregations, joins, and ranking functions.  
-- Perform data cleansing and transformation for accurate reporting.  
-- Develop an interactive Power BI dashboard to visualize sales, discounts, and profit trends.  
-- Create a foundation that can connect to Snowflake or other warehouse systems for future scaling.
+## Overview  
+This project analyzes retail sales data from the **Superstore dataset** to demonstrate SQL querying, data transformation, and dashboard visualization skills.  
+It focuses on building an end-to-end data workflow — from importing raw CSV data into MySQL, to performing analytics and visualizing trends in Power BI.
 
 ---
 
-### Tools & Technologies
+## Objectives  
+- Create reproducible SQL queries for aggregation, filtering, and ranking.  
+- Transform and validate data for accurate reporting.  
+- Design a Power BI dashboard for key business insights (sales, profit, discount).  
+- Establish a structure that can scale to Snowflake or Azure environments.  
+
+---
+
+## Tools & Technologies  
 | Category | Tools |
 |-----------|-------|
-| Querying & Database | MySQL |
+| Querying | MySQL |
 | Visualization | Power BI |
-| Data Sources | CSV exports of Superstore dataset |
+| Data Source | Superstore CSV dataset |
 | Version Control | GitHub |
-| Snowflake staging / Azure Data Factory integration |
+| Cloud Integration | Snowflake + Azure Data Factory (staging & monitoring) |
 
 ---
 
 
-### Data Import Process
-
-Documenting the import process ensures the dataset can be reloaded consistently, 
-which is important for data reliability and reproducibility in real-world analytics workflows.
-
-For practice, I documented two ways to load the dataset into MySQL:
-
-**Option 1 – Import Wizard:**  
-Used MySQL Workbench’s *Table Data Import Wizard* to quickly load `SampleSuperstore.csv`.
-
-**Option 2 – SQL Script (for reproducibility):**  
-Manually loaded the CSV into the `orders` table using `LOAD DATA INFILE`:
+## Data Import Process  
+The dataset was imported using two reproducible methods:  
+- **Import Wizard:** MySQL Workbench quick load for initial testing.  
+- **SQL Script:** Using `LOAD DATA INFILE` for repeatable pipeline setup.
 
 ```sql
 LOAD DATA LOCAL INFILE 'C:/Users/Kathryn/Documents/SampleSuperstore.csv'
@@ -48,28 +39,50 @@ ENCLOSED BY '"'
 LINES TERMINATED BY '\n'
 IGNORE 1 ROWS;
 ```
-IGNORE 1 ROWS → skips the header row.
-
-FIELDS TERMINATED BY ',' → handles the CSV format.
-
-ENCLOSED BY '"' → ensures text fields load correctly.
 
 ---
 
-### SQL Analysis Highlights
-Key queries demonstrate:
-- **Top-performing product categories and subcategories** by sales and profit  
-- **Customer segmentation** by region and purchase frequency  
-- **Average discount and profitability** correlation  
-- **Year-over-year growth trends** using date-based aggregations  
+## SQL Analysis Highlights
+Analytical focus areas:
 
-All queries are located in the `/queries` folder with corresponding output samples in `/results`.
+- Top-performing categories and subcategories
+- Customer segmentation by region and purchase frequency
+- Discount-to-profit correlation
+- Monthly sales and growth trends
+
+🗂️ Queries → /queries      
+📊 Results & screenshots → /results 
 
 ---
 
-## 1. Basic Filtering and Sorting  
+## Power BI Dashboard
+Features:
 
-**Question:** What are the top 10 Customers by Total Sales?  
+- Total sales, profit, and discount metrics
+- Regional and category-level profitability
+- Top customers and products
+- Dynamic filtering for interactive analysis
+
+📁 .pbix file → /powerbi     
+🖼️ Image preview → /results
+
+---
+
+## Project Structure
+Superstore_Analysis/
+│
+├── data/           # Raw Superstore CSV dataset
+├── queries/        # SQL scripts (joins, aggregations, ranking)
+├── results/        # Query results and Power BI visuals
+├── powerbi/        # Power BI .pbix file
+└── README.md       # Project documentation
+
+---
+
+📘 ## Appendix: Sample Queries & Outputs
+
+## 1. Top 10 Customers by Total Sales
+
 ```sql
 SELECT `Customer Name`, SUM(Sales) AS Total_Sales
 FROM superstore.orders
@@ -78,13 +91,12 @@ ORDER BY Total_Sales DESC
 LIMIT 10;
 ```
 
-**Result Screenshot:**
+**Result Screenshot:**      
 ![Top 10 Customers by Total Sales](results/top_sales_by_customer_ss.png)
 
 
-## 2. Aggregation
-   
-**Question:** What is the total profit by product category?
+## 2. Total Profit by Category
+
 ```sql
 SELECT Category, SUM(Profit) AS Total_Profit
 FROM superstore.orders
@@ -92,12 +104,11 @@ GROUP BY Category
 ORDER BY Total_Profit DESC;
 ```
 
-**Result Screenshot:**
+**Result Screenshot:**       
 ![Total Profit by Product Category](results/profit_by_category_ss.png)
 
-## 3. Date Functions
+## 3. Monthly Sales Trend
 
-**Question:** What is the Monthly Sales Trend?
 ```sql
 SELECT DATE_FORMAT(`Order Date`, '%Y-%m') AS Month,
 		SUM(Sales) AS Monthly_Sales
@@ -105,11 +116,11 @@ FROM superstore.orders
 GROUP BY Month 
 ORDER BY Month;
 ```
-**Result Screenshot:**
+**Result Screenshot:**      
 ![Monthly Sales Trend](results/monthly_sales_trends_ss.png)
 
-## 4. Subquery
-**Question:** What are the Top 5 Products by Quantity sold?
+## 4. Top 5 Products by Quantity Sold (Subquery)
+
 ```sql
 SELECT Product_Name, Total_Quantity
 FROM (
@@ -122,12 +133,11 @@ FROM (
 WHERE rn <= 5;
 ```
 
-**Result Screenshot:**
+**Result Screenshot:**      
 ![Top 5 Products by Quantity Sold](results/top_5_products_by_quantity_sold_ss.png)
 
-## 5. Aggregation with Grouping
+## 5. Regions with Negative Profit
 
-**Question:** What Regions have negative profit?
 ```sql
 SELECT Region, SUM(Profit) AS Total_Profit
 FROM superstore.orders
@@ -136,12 +146,11 @@ HAVING Total_Profit < 0
 ORDER BY  Total_Profit ASC;
 ```
 
-**Result Screenshot:**
+**Result Screenshot:**     
 ![Regions with Negative Profit](results/regions_with_negative_profit_ss.png)
 
-## 6. Window Function (ROW_NUMBER)
+## 6. Top 3 Customers by Region (Window Function)
 
-**Question:** Who are the top 3 customers by total sales in each region?
 ```sql
 WITH Customer_Sales AS (
     SELECT 
@@ -164,37 +173,11 @@ WHERE rn <= 3
 ORDER BY Region, rn;
 ```
 
-**Result Screenshot:**
+**Result Screenshot:**     
 ![Top 3 Customers By Total Sales in each Region](results/top_3_customers_by_total_sales_in_each_region_ss.png)
 
 ---
 
-## Power BI Dashboard
-
-To complement the SQL analysis, I built an interactive Power BI dashboard using the Superstore dataset.  
-This dashboard highlights sales trends, profitability, and product performance with KPIs, filters, and visuals.
-- Full dashboard screenshot (below)  
-- Download the `.pbix` file here: [Power BI File](powerbi/Superstore_Data_Dashboard.pbix)
-
-### Dashboard Preview
-![Superstore Dashboard Overview](results/superstore_dashboard_full.png)
-This dashboard was built using the Superstore dataset to highlight both high-level KPIs and deeper business insights.
-Top row: KPI cards for Total Sales, Profit, Order Count, and Average Order Value, with slicers for Region, and Year.
-Middle row: Visuals showing Sales by Region and a Yearly Sales Trend Line chart for deeper analysis.
-Bottom row: A Top 10 Products chart and slicers for Region, and Year.
-The layout moves from at-a-glance performance (KPIs) → comparisons across sales amd products by regions and year → detailed insights (products and trends). This mirrors how business leaders consume information: big picture first, followed by details that explain the “why.”
-
-
-
-Additional screenshots:  
-![Top 10 Products](results/top_10_products_by_sales_.png)  
-
-![Sales by Region](results/sales_by_region.png) 
-
----
-
-## The raw PowerBi Dashboard is availabkle for download in the powerbi folder. 
-
-
-
-
+Author: Kathryn Starkey    
+📧 kathrynstarkey.data@gmail.com    
+🌐 GitHub Portfolio
