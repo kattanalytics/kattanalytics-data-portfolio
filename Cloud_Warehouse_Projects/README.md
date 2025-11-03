@@ -1,35 +1,53 @@
-# Snowflake Projects  
+# Cloud Warehouse Projects (Snowflake + Azure Integration)  
+Author : Kathryn Starkey
 
-This folder contains projects that demonstrate how I use **Snowflake cloud data platform** for querying, data loading, and analysis.  
-It highlights my ability to work with cloud data warehouses as part of my goal to become a **Data Support Analyst**.  
+## Overview
 
----
+This project demonstrates how I use Snowflake and Azure Blob Storage together to design and manage cloud-based data workflows.
+It showcases my ability to stage, load, query, and analyze data in a scalable cloud environment — supporting the type of data quality and monitoring responsibilities essential in a Data Support or Data Engineering role.
 
-## 📂 Structure
-- **/queries** → SQL queries written and tested in Snowflake.  
-- **/results** → Saved outputs of queries (screenshots or CSV exports).  
-
----
-
-## 🚀 Getting Started
-1. Dataset: Loaded the **Superstore Sales** dataset into Snowflake.  
-2. Method: Used the **Snowflake Data Loading Wizard** to create a table and import `SampleSuperstore.csv`.  
-3. Schema: Data stored in `PORTFOLIO_DB.PUBLIC.ORDERS`.  
+The dataset used is the Superstore Sales dataset, loaded into Snowflake and queried for business insights such as profitability, regional performance, and customer trends.  
 
 ---
 
-## 📊 Queries
+## Objectives
 
--  Preview first 10 rows  
-  ```sql
-SELECT *
-FROM PORTFOLIO_DB.PUBLIC.SALES_SUPERSTORE
-LIMIT 10;
-```
-[View Result](preview_first_10_rows_p_db.csv)
+- Load and manage data in Snowflake using cloud-based storage.
+- Create and validate staging areas for raw data using Azure Blob Storage.
+- Perform SQL-based analytics on warehouse data.
+- Visualize and prepare the data for Power BI reporting integration.
+
+---
+
+## Tools & Technologies
+| Category | Tools |
+|-----------|-------|
+| Data Warehouse | Snowflake |
+| Cloud Storage |	Azure Blob |
+| Querying | SQL |
+| Visualization |	Power BI |
+| Version Control |	GitHub |
+
+## Data Workflow
+1. Azure Staging
+  - Created a Blob Container in Azure Storage.
+  - Uploaded the SampleSuperstore.csv dataset.
+  - Generated a SAS Token to securely connect Snowflake to Azure Blob.
+2. Snowflake Integration
+  - Configured an external stage in Snowflake to pull data from Azure Blob.
+  - Loaded the staged file into a Snowflake table (SUPERSTORE_RAW).
+  - Verified successful data ingestion through row counts and sampling queries.
+3. Querying & Analysis
+  - Used SQL within Snowflake to aggregate and analyze sales performance, profit distribution, and growth trends.
+4. Validation & Monitoring
+  - Checked data integrity between source and Snowflake table.
+  - Monitored query performance and cost optimization options.
 
 
--  Total Sales and Profit by Region
+
+## SQL Analysis Highlights
+
+1.  Total Sales and Profit by Region
 ```sql
 SELECT Region, 
        SUM(Sales) AS total_sales, 
@@ -40,94 +58,26 @@ ORDER BY total_sales DESC;
 ```
 [View Result](results/total_sales_and_profit_by_region_p_db.csv)
 
+---
 
--  Top 10 Products by Sales
-```sql
-SELECT Product_Name, 
-       SUM(Sales) AS total_sales
-FROM PORTFOLIO_DB.PUBLIC.SALES_SUPERSTORE
-GROUP BY Product_Name
-ORDER BY total_sales DESC
-LIMIT 10;
-```
-[View Result](results/top_10_products_by_sales_p_db.csv)
-
-
--  Yearly Sales Trend
-```sql
-SELECT YEAR(Order_Date) AS order_year, 
-       SUM(Sales) AS total_sales
-FROM PORTFOLIO_DB.PUBLIC.SALES_SUPERSTORE
-GROUP BY order_year
-ORDER BY order_year;
-```
-[View Results](results/yearly_sales_trends_p_db.csv)
-
-
--  Customer Ranking by Total Sales    
-Business Question: Who are the top 10 customers by total sales, and how do they rank compared to others?
-```sql
+2. Top 10 Customers by Profit
+  ```sql
 SELECT 
-    Customer_Name,
-    SUM(Sales) AS Total_Sales,
-    RANK() OVER (ORDER BY SUM(Sales) DESC) AS Sales_Rank
-FROM PORTFOLIO_DB.PUBLIC.SALES_SUPERSTORE
-GROUP BY Customer_Name
-ORDER BY Total_Sales DESC
+    CUSTOMER_NAME,
+    ROUND(SUM(PROFIT), 2) AS TOTAL_PROFIT
+FROM SUPERSTORE_RAW
+GROUP BY CUSTOMER_NAME
+ORDER BY TOTAL_PROFIT DESC
 LIMIT 10;
 ```
-📌 Demonstrates: Window functions (RANK()), aggregation, and ranking logic.
 
-[View Result](results/customer_ranking_p_db.csv)
+ 📌 Highlights ranking logic and customer-level profitability.
 
--  Monthly Sales Trend with Running Total     
-Business Question: What is the month-by-month sales trend, and how does the cumulative total grow over time?
-```sql
-SELECT
-    DATE_TRUNC('month', Order_Date) AS Order_Month,
-    SUM(Sales) AS Monthly_Sales,
-    SUM(SUM(Sales)) OVER (ORDER BY DATE_TRUNC('month', Order_Date)) AS Running_Total
-FROM PORTFOLIO_DB.PUBLIC.SALES_SUPERSTORE
-GROUP BY Order_Month
-ORDER BY Order_Month;
-```
-📌 Demonstrates: Date functions, aggregation, and windowed running totals.
-
-[View Result](results/monthly_sales_trend_p_db.csv)
-
-
--  Profitability by Category + Product Level    
-  Business Question: Within each product category, which single product is the most profitable?
-```sql
-SELECT CATEGORY,
-       PRODUCT_NAME,
-       SUM(PROFIT) AS TOTAL_PROFIT
-FROM PORTFOLIO_DB.PUBLIC.SALES_SUPERSTORE
-GROUP BY CATEGORY, PRODUCT_NAME
-QUALIFY ROW_NUMBER() OVER (PARTITION BY CATEGORY ORDER BY SUM(PROFIT) DESC) = 1
-ORDER BY TOTAL_PROFIT DESC;
-```
-
-📌 Demonstrates: Window Functions + Partitioning   
-
-[View Result](profitability_by_category_plus_product_level_p_db.csv)
+[View Result](results/top_10_customers_by_profit_ss_a.csv)
 
 ---
 
-
-## Azure Integration
-
-This project demonstrates how Snowflake integrates with Microsoft Azure for cloud-based data workflows.  
-
-- **Staging**: A blob container was created in Azure Storage and connected to Snowflake using a secure SAS token. Files (Superstore dataset) were staged into Snowflake through this integration.  
-- **Loading**: Data from the staged files was loaded into a Snowflake table (`SUPERSTORE_RAW`) for analysis.  
-- **Validation**: Once loaded, the data was queried directly in Snowflake, confirming successful integration and accessibility.  
-
-This workflow highlights my ability to work with **cloud storage and data warehouses together**, preparing data for scalable analytics and pipeline automation.
-
-## 📊 Queries
-
--  Year-Over-Year Sales Growth
+3. Year-Over-Year Sales Growth
   ```sql
   SELECT 
     YEAR(ORDER_DATE) AS YEAR,
@@ -142,59 +92,30 @@ This workflow highlights my ability to work with **cloud storage and data wareho
   ORDER BY YEAR;
   ```
 
-  📌 Shows growth % by year to highlight trend analysis
+  📌 Applies window functions and lag logic for time-series growth analysis.
 
 [View Result](results/year_over_year_sales_growth_ss_a.csv)
 
+---
 
--  Top 10 Customers by Profit
-  ```sql
-SELECT 
-    CUSTOMER_NAME,
-    ROUND(SUM(PROFIT), 2) AS TOTAL_PROFIT
-FROM SUPERSTORE_RAW
-GROUP BY CUSTOMER_NAME
-ORDER BY TOTAL_PROFIT DESC
-LIMIT 10;
+4. Most Profitable Product in Each Category
+```sql
+SELECT CATEGORY,
+       PRODUCT_NAME,
+       SUM(PROFIT) AS TOTAL_PROFIT
+FROM PORTFOLIO_DB.PUBLIC.SALES_SUPERSTORE
+GROUP BY CATEGORY, PRODUCT_NAME
+QUALIFY ROW_NUMBER() OVER (PARTITION BY CATEGORY ORDER BY SUM(PROFIT) DESC) = 1
+ORDER BY TOTAL_PROFIT DESC;
 ```
 
- 📌 Demonstrates ability to drill down into customer-level profitability
+📌 Uses window partitioning and ranking to isolate top performers. 
 
-[View Result](results/top_10_customers_by_profit_ss_a.csv)
+[View Result](profitability_by_category_plus_product_level_p_db.csv)
 
+---
 
--  Sales vs. Profit by Category
-  ```sql
-SELECT 
-    CATEGORY,
-    ROUND(SUM(SALES), 2) AS TOTAL_SALES,
-    ROUND(SUM(PROFIT), 2) AS TOTAL_PROFIT
-FROM SUPERSTORE_RAW
-GROUP BY CATEGORY
-ORDER BY TOTAL_SALES DESC;
-```
-
- 📌 Highlights mismatch between sales volume and actual profit
-
-[View Result](results/sales_vs_profit_by_category_ss_a.csv)
-
-
--  Monthly Sales Trend (for forecasting prep)
-  ```sql
-SELECT 
-    TO_CHAR(ORDER_DATE, 'YYYY-MM') AS YEAR_MONTH,
-    ROUND(SUM(SALES), 2) AS TOTAL_SALES
-FROM SUPERSTORE_RAW
-GROUP BY YEAR_MONTH
-ORDER BY YEAR_MONTH;
-```
-
- 📌 Aggregate sales by month, set up time series for BI/forecasting
-
-[View Result](results/monthly_sales_trend(for_fc_prep)_ss_a.cvs)
-
-
--  Regional Contribution to Total Sales
+5. Regional Contribution to Total Sales
   ```sql
 SELECT 
     REGION,
@@ -212,14 +133,27 @@ ORDER BY TOTAL_SALES DESC;
 
 [View Result](results/regional_contribution_to_total_sales_ss_a.csv)
 
+---
+
+## Project Structure  
+Cloud_Warehouse_Projects/
+│
+├── queries/       # Snowflake SQL scripts
+├── results/       # Query outputs and screenshots
+└── README.md      # Project documentation
 
 ---
 
-## Environment & Tools  
+## Key Takeaways
+- Hands-on experience with cloud data loading and validation.
+- Strong understanding of Snowflake integration with Azure.
+- Demonstrates SQL proficiency using window, date, and ranking functions.
+- Builds foundation for automated data pipelines and Power BI connectivity.
 
-- Developed and version-controlled in **VS Code + GitHub**  
-- Data modeling and queries executed in **Snowflake**  
-- Visualization created in **Power BI**  
-- Data staging and integration with **Azure Blob Storage**  
+---
+
+Author: Kathryn Starkey   
+📧 kathrynstarkey.data@gmail.com   
+🌐 GitHub Portfolio
 
 ---
