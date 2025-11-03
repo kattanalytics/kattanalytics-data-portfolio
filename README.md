@@ -3,7 +3,7 @@
 Welcome! This portfolio highlights my skills in SQL, Power BI, and cloud-based data workflows.
 Each project demonstrates my ability to clean, transform, and visualize data while ensuring accuracy and efficiency in reporting.
 
-## 💡Focus Areas 
+## Focus Areas 
   
 - SQL development (joins, window functions, optimization) 
 - Power BI dashboards and KPI reporting  
@@ -12,7 +12,7 @@ Each project demonstrates my ability to clean, transform, and visualize data whi
  
 ---
 
-## 📂 Projects  
+## Projects  
 
 ### 🔹 [Superstore Sales Analysis](sales/README.md)  
 Retail sales analysis using SQL. Includes customer segmentation, sales trends,  
@@ -25,13 +25,13 @@ Demonstrates data integration, schema management, and scheduled pipeline runs.
 
 ---
 
-## 🧠 Tools & Techniques  
+## Tools & Techniques  
 
 - SQL | Power BI | Snowflake | Azure Data Factory | ETL | Data Modeling | GitHub | AI Workflow Integration
 
 ---
 
-## 🤖 AI Integration in Workflow
+## AI Integration in Workflow
 
 - I use AI tools such as ChatGPT and GitHub Copilot to accelerate development while maintaining a strong focus on understanding data logic and structure.
 AI serves as a complement to analysis, not a substitute for reasoning.
